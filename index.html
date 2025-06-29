@@ -46,21 +46,63 @@
               // This function (`page`) will get called for each page of records.
 
               records.forEach(function(record) {
-                  console.log('Retrieved', record);
-                  form.getElementById("form_barrierid").value = 1;
+                  console.log('Retrieved', record.get('id'));
+                  document.getElementById("form_barrierid").value = record.fields['id'];
+                  document.getElementById("form_subject").value = record.fields['subject'];
+                  document.getElementById("form_actual").value = record.fields['ActualResult'];
+                  document.getElementById("form_espected").value = record.fields['ExpectedResult'];
+                  document.getElementById("form_steps").value = record.fields['StepsToReproduce'];
+                  document.getElementById("form_wcag").value = record.fields['WCAG'];
+                  document.getElementById("form_useraffected").value = record.fields['disabilities'];
               });
 
               // To fetch the next page of records, call `fetchNextPage`.
               // If there are more records, `page` will get called again.
               // If there are no more records, `done` will get called.
-              //fetchNextPage();
+              fetchNextPage();
 
           }, function done(err) {
               if (err) { console.error(err); return; }
           });
         })
 
+
+      document.getElementById('contact-form').addEventListener('submit', function(event) {
+        event.preventDefault();
+        base('Table2').create([
+        {
+          "fields": {
+            'id': Number(document.getElementById("form_barrierid").value),
+            'subject': document.getElementById("form_subject").value,
+            'ActualResult': document.getElementById("form_actual").value,
+            'ExpectedResult': document.getElementById("form_espected").value,
+            'StepsToReproduce': document.getElementById("form_steps").value,
+            'WCAG': document.getElementById("form_wcag").value,
+            'disabilities': document.getElementById("form_useraffected").value
+          }
+        }
+        ], function(err, records) {
+            if (err) {
+              console.error(err);
+              return;
+            }
+            records.forEach(function (record) {
+              var newid = record.getId();
+              setTimeout(function() {
+                base('Table2').find(newid, function(err, record) {
+                    if (err) { console.error(err); return; }
+                    console.log('Retrieved', record);
+                    var AItext= record.fields["AI assist"].value;
+                    document.getElementById('AItext').setInnerText(AItext);
+
+                });
+              }, 30000)
+            });
+          })
+
+        });
       })
+
 
     </script>
 </head>
@@ -99,13 +141,13 @@
                 <div class="row">
                     <div class="col-md-12">
                         <div class="form-group">
-                            <label for="page">Page</label>
-                            <input id="form_page" type="text" name="page" class="form-control" placeholder="Enter a page" required="required" data-error="Page is required.">
+                            <label for="page">Subject</label>
+                            <input id="form_subject" type="text" name="subject" class="form-control" placeholder="Enter a subject" required="required" data-error="Subject is required.">
                         </div>
                     </div>
                     </div>
 
-                <div class="row">
+                <!-- div class="row">
                     <div class="col-md-12">
                         <div class="form-group">
                             <label for="barrier-test">Barrier Test</label>
@@ -159,7 +201,7 @@
 
                         </div>
                     </div>
-                </div>
+                </div -->
                 <div class="row">
                     <div class="col-md-12">
                         <div class="form-group">
@@ -180,14 +222,14 @@
                     </div>
                 </div>
 
-                <div class="row">
+                <!-- div class="row">
                     <div class="col-md-12">
                           <div class="form-group">
                             <label for="user-impact">User Impact</label>
                             <textarea id="form_userimpact" name="userimpact" class="form-control" placeholder="Enter a text" rows="4" required="required" data-error="Text is required."></textarea
                                 >
                         </div>
-                </div>
+                </div -->
             </div>
 
                 <div class="row">
@@ -236,6 +278,7 @@
             <div class="row">
               <div class="col-md-12">
                   <h2>The summary generated:</h2>
+                  <div id="AItext"></div>
               </div>
             </div>
         </div>
