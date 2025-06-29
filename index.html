@@ -91,9 +91,9 @@
               setTimeout(function() {
                 base('Table2').find(newid, function(err, record) {
                     if (err) { console.error(err); return; }
-                    console.log('Retrieved', record);
-                    var AItext= record.fields["AI assist"].value;
-                    document.getElementById('AItext').setInnerText(AItext);
+                    var AItext= record.get('AI assist');
+                    console.log(AItext);
+                    document.getElementById('AItext').innerText= AItext.value;
 
                 });
               }, 30000)
@@ -128,7 +128,7 @@
                   </div>
               </div>
 
-              <form id="contact-form" role="form">
+              <form id="contact-form" role="form" method="post">
               <div class="row">
                   <div class="col-md-12">
                       <div class="form-group">
@@ -264,7 +264,7 @@
 
                     <div class="container content-center">
                     <div class="col-md-6 ">
-                        <input type="submit" class="submitbtn btn btn-send  pt-2 btn-block" value="Send Results" >
+                        <input type="submit" class="submitbtn btn btn-send  pt-2 btn-block" value="Send Results (30 seconds to wait)" >
                     </div>
                     </div>
 
